@@ -1,244 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Icon Investments Uganda</title>
-<link rel="icon" href="favicon.png" type="image/png">
-<style>
-body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f4f4f4; }
-header { background:#1E88E5; color:#fff; padding:15px; text-align:center; }
-nav a { color:#fff; margin:0 10px; text-decoration:none; font-weight:bold; cursor:pointer; }
-nav a:hover { text-decoration:underline; }
-main { padding:20px; max-width:1000px; margin:auto; }
-.section { background:#fff; padding:20px; margin-bottom:20px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1); }
-h1,h2,h3 { margin:10px 0; }
-button { background:#1E88E5; color:#fff; border:none; padding:10px 20px; cursor:pointer; border-radius:5px; margin-top:10px; }
-button:hover { background:#1565C0; }
-input[type=text], input[type=password], input[type=number] { width:100%; padding:10px; margin:5px 0 15px; border:1px solid #ccc; border-radius:5px; }
-.product { display:flex; align-items:center; justify-content:space-between; margin-bottom:15px; }
-.product img { width:80px; height:80px; object-fit:cover; border-radius:5px; }
-#purchasedProducts p { background:#e3f2fd; padding:10px; border-radius:5px; margin:5px 0; }
-footer { background:#1E88E5; color:#fff; padding:15px; text-align:center; margin-top:20px; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Icon Investments Uganda</title>
+  <link rel="icon" href="favicon.png" type="image/png">
+
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <style>
+    /* Basic CSS for layout */
+    body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f4f4f4;}
+    header { background:#003366; color:white; padding:10px; text-align:center;}
+    nav a { color:white; margin:0 10px; text-decoration:none; }
+    main { padding:20px; }
+    .hero { text-align:center; background:#e0e0e0; padding:30px; margin-bottom:20px; }
+    .btn { background:#003366; color:white; padding:10px 20px; text-decoration:none; display:inline-block; margin-top:10px; }
+    section { margin-bottom:30px; }
+    input, button { padding:8px; margin:5px 0; width:100%; max-width:300px; }
+    footer { background:#003366; color:white; padding:15px; text-align:center; }
+  </style>
 </head>
 <body>
 
 <header>
   <h1>Icon Investments Uganda</h1>
   <nav>
-    <a onclick="showPage('home')">Home</a>
-    <a onclick="showPage('dashboard')">Dashboard</a>
-    <a onclick="showPage('products')">Products</a>
-    <a onclick="showPage('recharge')">Recharge</a>
-    <a onclick="showPage('withdraw')">Withdraw</a>
-    <a onclick="showPage('team')">Team</a>
-    <a onclick="logout()">Logout</a>
+    <a href="#home">Home</a>
+    <a href="#products">Products</a>
+    <a href="#recharge">Recharge</a>
+    <a href="#withdraw">Withdraw</a>
+    <a href="#team">Team</a>
+    <a href="#contact">Support</a>
   </nav>
 </header>
 
 <main>
-<!-- LOGIN / REGISTER -->
-<div id="loginPage" class="section">
-  <h2>Login</h2>
-  <input type="text" id="loginPhone" placeholder="Phone number +256-0">
-  <input type="password" id="loginPassword" placeholder="Password">
-  <button id="loginBtn">Login</button>
-  <hr>
-  <h2>Register</h2>
-  <input type="text" id="regPhone" placeholder="Phone number +256-0">
-  <input type="password" id="regPassword" placeholder="Password">
-  <input type="password" id="regConfirm" placeholder="Confirm Password">
-  <input type="text" id="inviteCode" placeholder="Invite Code (optional)">
-  <button id="registerBtn">Register</button>
-</div>
+  <!-- Home Section -->
+  <section id="home" class="hero">
+    <h2>Invest Smart. Earn Big.</h2>
+    <p>Welcome to Icon Investments Uganda — your trusted bag trading and investment platform.</p>
+    <p><strong>Customer Care:</strong> Telegram: <a href="https://t.me/Gilbert25600" target="_blank">@Gilbert25600</a> | Phone: 0708462897</p>
+  </section>
 
-<!-- DASHBOARD -->
-<div id="dashboardPage" class="section" style="display:none;">
-  <h2>Dashboard</h2>
-  <p>Phone: <span id="userPhone"></span></p>
-  <p>Balance: <span id="userBalance">UGX 0</span></p>
-  <p>Your referral link: <input type="text" id="referralLink" readonly></p>
-  <h3>Purchased Products & Daily ROI</h3>
-  <div id="purchasedProducts"></div>
-</div>
+  <!-- Login/Register Section -->
+  <section id="auth">
+    <h2>Register / Login</h2>
+    <input type="text" id="phone" placeholder="Phone number +256-0" />
+    <input type="password" id="password" placeholder="Password" />
+    <input type="password" id="confirmPassword" placeholder="Confirm Password" />
+    <input type="text" id="inviteCode" placeholder="Invite Code (optional)" />
+    <button id="registerBtn">Register</button>
+    <hr>
+    <input type="text" id="loginPhone" placeholder="Phone number +256-0" />
+    <input type="password" id="loginPassword" placeholder="Password" />
+    <button id="loginBtn">Login</button>
+  </section>
 
-<!-- PRODUCTS -->
-<div id="productsPage" class="section" style="display:none;">
-  <h2>Products - Bags</h2>
-  <div class="product"><img src="images/bag1.png"><span>Bag 1 - UGX 25,000</span><button class="buyBtn" data-price="25000" data-name="Bag 1">Buy</button></div>
-  <div class="product"><img src="images/bag2.png"><span>Bag 2 - UGX 50,000</span><button class="buyBtn" data-price="50000" data-name="Bag 2">Buy</button></div>
-  <div class="product"><img src="images/bag3.png"><span>Bag 3 - UGX 75,000</span><button class="buyBtn" data-price="75000" data-name="Bag 3">Buy</button></div>
-  <div class="product"><img src="images/bag4.png"><span>Bag 4 - UGX 100,000</span><button class="buyBtn" data-price="100000" data-name="Bag 4">Buy</button></div>
-  <div class="product"><img src="images/bag5.png"><span>Bag 5 - UGX 125,000</span><button class="buyBtn" data-price="125000" data-name="Bag 5">Buy</button></div>
-  <div class="product"><img src="images/bag6.png"><span>Bag 6 - UGX 150,000</span><button class="buyBtn" data-price="150000" data-name="Bag 6">Buy</button></div>
-  <div class="product"><img src="images/bag7.png"><span>Bag 7 - UGX 175,000</span><button class="buyBtn" data-price="175000" data-name="Bag 7">Buy</button></div>
-  <div class="product"><img src="images/bag8.png"><span>Bag 8 - UGX 200,000</span><button class="buyBtn" data-price="200000" data-name="Bag 8">Buy</button></div>
-</div>
+  <!-- Products Section -->
+  <section id="products">
+    <h2>Products</h2>
+    <div id="productList">
+      <div>Bag1 - UGX 25,000 <button>Buy</button></div>
+      <div>Bag2 - UGX 50,000 <button>Buy</button></div>
+      <div>Bag3 - UGX 75,000 <button>Buy</button></div>
+      <div>Bag4 - UGX 100,000 <button>Buy</button></div>
+      <div>Bag5 - UGX 125,000 <button>Buy</button></div>
+      <div>Bag6 - UGX 150,000 <button>Buy</button></div>
+      <div>Bag7 - UGX 175,000 <button>Buy</button></div>
+      <div>Bag8 - UGX 200,000 <button>Buy</button></div>
+    </div>
+  </section>
 
-<!-- RECHARGE -->
-<div id="rechargePage" class="section" style="display:none;">
-  <h2>Recharge Account</h2>
-  <input type="text" id="rechargePhone" placeholder="Wallet Account Number">
-  <input type="number" id="rechargeAmount" placeholder="Amount (Minimum UGX 25,000)">
-  <input type="text" id="transactionID" placeholder="Transaction ID">
-  <button id="rechargeBtn">Recharge Now</button>
-  <p>Instructions: Each order has a unique payment number. Do not reuse previous transaction info. Wait 10-30 mins for confirmation.</p>
-</div>
+  <!-- Recharge Section -->
+  <section id="recharge">
+    <h2>Recharge</h2>
+    <input type="text" id="rechargeAccount" placeholder="Enter your mobile account" />
+    <input type="text" id="rechargeAmount" placeholder="Enter amount (min UGX 25,000)" />
+    <input type="text" id="transactionId" placeholder="Transaction ID" />
+    <button id="rechargeBtn">Recharge Now</button>
+    <p>Recharges can be made anytime, 24/7. Do not trust fake agents.</p>
+  </section>
 
-<!-- WITHDRAW -->
-<div id="withdrawPage" class="section" style="display:none;">
-  <h2>Withdraw Funds</h2>
-  <input type="number" id="withdrawAmount" placeholder="Amount (Minimum UGX 10,000)">
-  <button id="withdrawBtn">Withdraw Now</button>
-  <p>Withdrawal fee: 10%. Funds credited within 2 hours, max 24 hours. Do not trust fake agents.</p>
-</div>
+  <!-- Withdraw Section -->
+  <section id="withdraw">
+    <h2>Withdraw</h2>
+    <input type="text" id="withdrawAmount" placeholder="Enter withdrawal amount" />
+    <button id="withdrawBtn">Withdraw Now</button>
+    <p>Minimum withdrawal: UGX 10,000. Tax: 10%. Funds credited within 2 hours, max 24 hours.</p>
+  </section>
 
-<!-- TEAM -->
-<div id="teamPage" class="section" style="display:none;">
-  <h2>Invitation & Team</h2>
-  <p>Invite friends and get 35% cashback immediately after they register and invest.</p>
-  <p>Example: Friend invests UGX 30,000 → you get UGX 10,500 withdrawable.</p>
-  <p>Example: Friend invests UGX 80,000 → you get UGX 28,000 withdrawable.</p>
-</div>
-
+  <!-- Team / Invitation Section -->
+  <section id="team">
+    <h2>Team / Invitation</h2>
+    <p>Invite friends and receive 35% cashback immediately after they invest.</p>
+    <p>Example: Friend invests UGX 30,000 → You get UGX 10,500.</p>
+    <p>Example: Friend invests UGX 80,000 → You get UGX 28,000.</p>
+  </section>
 </main>
 
-<footer>
-  &copy; 2025 Icon Investments Uganda. All Rights Reserved.
+<footer id="contact">
+  <h3>Contact & Support</h3>
+  <p>Telegram: <a href="https://t.me/Gilbert25600" target="_blank">@Gilbert25600</a></p>
+  <p>Phone: 0708462897 — Nakanjako Justine</p>
+  <p>&copy; 2025 Icon Investments Uganda. All Rights Reserved.</p>
 </footer>
 
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-
 <script>
-// ===== Firebase Config =====
-const firebaseConfig = {
-  apiKey: "AIzaSyCexWVe0SWkMGZX7wPk1tELjeLR-ZpFhWA",
-  authDomain: "icon-investments.firebaseapp.com",
-  projectId: "icon-investments",
-  storageBucket: "icon-investments.firebasestorage.app",
-  messagingSenderId: "749069338933",
-  appId: "1:749069338933:web:0fd8bc7f3fa5e9d802e47c"
-};
-firebase.initializeApp(firebaseConfig);
-
-const auth = firebase.auth();
-const db = firebase.database();
-
-// ===== NAVIGATION =====
-function showPage(page){
-  document.getElementById('loginPage').style.display = (page==='home'?'block':'none');
-  document.getElementById('dashboardPage').style.display = (page==='dashboard'?'block':'none');
-  document.getElementById('productsPage').style.display = (page==='products'?'block':'none');
-  document.getElementById('rechargePage').style.display = (page==='recharge'?'block':'none');
-  document.getElementById('withdrawPage').style.display = (page==='withdraw'?'block':'none');
-  document.getElementById('teamPage').style.display = (page==='team'?'block':'none');
-}
-
-// ===== AUTH STATE =====
-auth.onAuthStateChanged(user=>{
-  if(user){
-    showPage('dashboard');
-    loadUserData(user.uid);
-  } else {
-    showPage('home');
-  }
-});
-
-// ===== REGISTER =====
-document.getElementById('registerBtn').onclick = ()=>{
-  const phone = document.getElementById('regPhone').value;
-  const pass = document.getElementById('regPassword').value;
-  const confirm = document.getElementById('regConfirm').value;
-  const invite = document.getElementById('inviteCode').value;
-  if(!phone||!pass||!confirm) return alert("Fill all fields");
-  if(pass!==confirm) return alert("Passwords do not match");
-
-  auth.createUserWithEmailAndPassword(phone+'@icon.com', pass)
-  .then(cred=>{
-    db.ref('users/'+cred.user.uid).set({
-      phone: phone,
-      balance: 0,
-      purchased: {},
-      referrals: {},
-      inviteCode: invite || ''
-    });
-    alert('Registered successfully');
-  }).catch(err=>alert(err.message));
-};
-
-// ===== LOGIN =====
-document.getElementById('loginBtn').onclick = ()=>{
-  const phone = document.getElementById('loginPhone').value;
-  const pass = document.getElementById('loginPassword').value;
-  if(!phone||!pass) return alert("Fill all fields");
-
-  auth.signInWithEmailAndPassword(phone+'@icon.com', pass)
-  .catch(err=>alert(err.message));
-};
-
-// ===== LOGOUT =====
-function logout(){ auth.signOut(); }
-
-// ===== LOAD USER DATA =====
-function loadUserData(uid){
-  db.ref('users/'+uid).on('value', snap=>{
-    const data = snap.val();
-    if(!data) return;
-    document.getElementById('userPhone').innerText = data.phone;
-    document.getElementById('userBalance').innerText = 'UGX '+data.balance;
-    document.getElementById('referralLink').value = window.location.href + '?ref=' + uid;
-
-    // Display purchased products
-    const purchased = data.purchased || {};
-    const container = document.getElementById('purchasedProducts');
-    container.innerHTML = '';
-    Object.keys(purchased).forEach(pid=>{
-      const p = purchased[pid];
-      const div = document.createElement('p');
-      div.innerText = p.name + ' | Purchased: ' + new Date(p.date).toLocaleDateString() + ' | Daily ROI: UGX ' + Math.floor(p.price*0.25);
-      container.appendChild(div);
-    });
-  });
-}
-
-// ===== BUY PRODUCTS =====
-document.querySelectorAll('.buyBtn').forEach(btn=>{
-  btn.onclick = ()=>{
-    const user = auth.currentUser;
-    if(!user) return alert('Login first');
-    const name = btn.dataset.name;
-    const price = parseInt(btn.dataset.price);
-    const date = Date.now();
-    db.ref('users/'+user.uid+'/purchased').push({name, price, date});
-    alert('Product purchased successfully! ROI will start daily.');
+  // Firebase Config
+  const firebaseConfig = {
+    apiKey: "AIzaSyCexWVe0SWkMGZX7wPk1tELjeLR-ZpFhWA",
+    authDomain: "icon-investments.firebaseapp.com",
+    projectId: "icon-investments",
+    storageBucket: "icon-investments.appspot.com",
+    messagingSenderId: "749069338933",
+    appId: "1:749069338933:web:0fd8bc7f3fa5e9d802e47c"
   };
-});
+  firebase.initializeApp(firebaseConfig);
 
-// ===== RECHARGE =====
-document.getElementById('rechargeBtn').onclick = ()=>{
-  const user = auth.currentUser;
-  if(!user) return alert('Login first');
-  const amt = parseInt(document.getElementById('rechargeAmount').value);
-  const txn = document.getElementById('transactionID').value;
-  if(!amt || !txn || amt<25000) return alert('Minimum recharge UGX 25,000');
-  db.ref('rechargeRequests/'+user.uid).push({amount:amt, transactionID:txn, date:Date.now()});
-  alert('Recharge request submitted. Wait for admin approval.');
-};
+  // Registration
+  document.getElementById('registerBtn').addEventListener('click', function(){
+    const phone = document.getElementById('phone').value;
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    if(password !== confirmPassword){ alert("Passwords do not match!"); return; }
+    firebase.auth().createUserWithEmailAndPassword(phone+"@iconinvest.com", password)
+      .then(()=>alert("Registration successful!"))
+      .catch(err=>alert(err.message));
+  });
 
-// ===== WITHDRAW =====
-document.getElementById('withdrawBtn').onclick = ()=>{
-  const user = auth.currentUser;
-  if(!user) return alert('Login first');
-  const amt = parseInt(document.getElementById('withdrawAmount').value);
-  if(!amt || amt<10000) return alert('Minimum withdrawal UGX 10,000');
-  const fee = amt*0.10;
-  db.ref('withdrawRequests/'+user.uid).push({amount:amt, fee, date:Date.now()});
-  alert('Withdrawal request submitted.');
-};
+  // Login
+  document.getElementById('loginBtn').addEventListener('click', function(){
+    const phone = document.getElementById('loginPhone').value;
+    const password = document.getElementById('loginPassword').value;
+    firebase.auth().signInWithEmailAndPassword(phone+"@iconinvest.com", password)
+      .then(()=>alert("Login successful!"))
+      .catch(err=>alert(err.message));
+  });
 </script>
 
 </body>
-</html>
+                                  </html>
